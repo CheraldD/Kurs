@@ -1,23 +1,26 @@
 #include "communicator.h"
-void communicator::client_auth(){
+int communicator::client_auth(){
     auto result = std::find(cl_ids.begin(),cl_ids.end(),cl_id);
     std::string salt=SALT_generate();
+    std::string serv_hash;
+    std::string flag="ERR";
     if(result==cl_ids.end()){
         std::cout<<"Клиент с таким айди не найден"<<std::endl;
-        strncpy(buffer, "ERR", sizeof(buffer));
-        int bytes_sended = send(clientSocket, buffer, sizeof(buffer), 0);
-        memset(buffer,0,sizeof(buffer));
-        close(clientSocket);
+        send_data(flag);
+        return 1;
     }
-    else{
-        auto pos = std::distance(cl_ids.begin(), result);
-        strncpy(buffer, salt.c_str(), sizeof(buffer));
-        int bytes_sended = send(clientSocket, buffer, sizeof(buffer), 0);
-        memset(buffer,0,sizeof(buffer));
-        int bytes_recieved = recv(clientSocket, buffer, sizeof(buffer), 0);
+    CryptoPP::Weak::MD5 hash;
+    memset(buffer,0,sizeof(buffer));
+    auto pos = std::distance(cl_ids.begin(), result); //для нахождения пароля
+    send_data(salt);
+    std::string cl_hash=recv_data();
+    CryptoPP::StringSource(salt+ cl_passes[pos], true, new CryptoPP::HashFilter(hash, new CryptoPP::HexEncoder(new CryptoPP::StringSink(serv_hash))));
+    if(serv_hash!=cl_hash){
+        std::cout<<"Пароль неверный"<<std::endl;
+        send_data(flag);
+        return 1;
     }
-    //int bytes_received = recv(clientSocket, buffer, sizeof(buffer), 0);
-    //std::string cl_hash(buffer,bytes_received-1);
+    return 0;
 }
 
 void communicator::connect_to_cl()
@@ -30,11 +33,12 @@ void communicator::connect_to_cl()
     addr_size = sizeof(clientAddr);
     clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &addr_size);
     if(clientSocket<0) {
-        std::cerr<<"Ошибка принятия соединения клиента"<<std::endl;
+        std::cout<<"Ошибка принятия соединения клиента"<<std::endl;
+        close(clientSocket);
     } else {
         std::cout << "Соединение установлено" << std::endl;
     }
-    cl_id=get_cl_id();
+    cl_id=recv_data();
     
 }
 communicator::communicator(uint port, std::string base_loc, std::string log_loc)
@@ -57,17 +61,13 @@ communicator::communicator(uint port, std::string base_loc, std::string log_loc)
         perror("Ошибка при привязке сокета");
         exit(1);
     }
-    while (true)
-    {
-        connect_to_cl();
-        client_auth();
-    }
     
 }
-std::string communicator::get_cl_id()
+std::string communicator::recv_data()
 {
+    memset(buffer,0,sizeof(buffer));
     int bytes_received = recv(clientSocket, buffer, sizeof(buffer), 0);
-    std::string received_data(buffer, bytes_received-1);
+    std::string received_data(buffer, bytes_received);
     memset(buffer,0,sizeof(buffer));
     return received_data;
 }
@@ -92,4 +92,13 @@ std::string communicator::convert_to_hex(uint64_t x)
         x /= 16;
     } while (x!=0);
     return hex;
+}
+void communicator::send_data(std::string data){
+    memset(buffer,0,sizeof(buffer));
+    strncpy(buffer, data.c_str(), data.length());
+    int bytes_sended = send(clientSocket, buffer, data.length(), 0);
+    memset(buffer,0,sizeof(buffer));
+}
+void communicator::close_sock(){
+    close(clientSocket);
 }

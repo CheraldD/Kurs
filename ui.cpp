@@ -17,6 +17,17 @@ UI::UI(int argc, char* argv[])
         log_loc=get_log_loc();
         port=get_port();
         communicator server (port,base_loc,log_loc);
+        while (true)
+    {
+        server.connect_to_cl();
+        if(server.client_auth()==1){
+            server.close_sock();
+        }
+        else{
+            int num_of_vecc=stoi(server.recv_data());
+            data_handler inf(num_of_vecc,server);
+        }
+    }
     } catch (po::error& e) {
         std::cout << e.what() << std::endl;
     }

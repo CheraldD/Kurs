@@ -3,19 +3,19 @@
 CXX = g++
 
 # Флаги компилятора
-CXXFLAGS = -Wall -lboost_program_options
+CXXFLAGS = -Wall -lboost_program_options -lcrypto++ 
 
 # Имя исполняемого файла
 TARGET = server
 
 # Исходные файлы
-SOURCES = main.cpp base.cpp communicator.cpp ui.cpp logger.cpp
+SOURCES = main.cpp base.cpp communicator.cpp ui.cpp logger.cpp data_handler.cpp
 
 # Объектные файлы
 OBJECTS = $(SOURCES:.cpp=.o)
 
 # Зависимости на заголовочные файлы
-DEPS = base.h ui.h communicator.h logger.h
+DEPS = base.h ui.h communicator.h logger.h data_handler.h
 
 # Цель по умолчанию
 all: $(TARGET)
