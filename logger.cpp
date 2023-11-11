@@ -8,7 +8,8 @@ void logger::write_log(std::string log_loc,std::string message){
     auto now = std::chrono::system_clock::now();
     std::time_t end_time = std::chrono::system_clock::to_time_t(now);
     std::string time = std::ctime(&end_time);
-    log<<time<<"/"<<message<<'\n';
+    time.pop_back();
+    log<<time<<" / "<<message<<'\n';
     log.flush();
     log.close();
 }

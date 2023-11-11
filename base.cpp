@@ -29,13 +29,16 @@ std::vector<std::string> base::password_s(std::vector<std::string> c){
     }
     return temp1;
 }
-base::base(std::string base_loc){
+base::base(std::string base_loc,std::string log_loc){
+    log_location=log_loc;
     cl_base.open(base_loc, std::ios::in);
     if(cl_base.is_open()){
+        log.write_log(log_location,"База данных успешно прочитана");
         read_base(cl_base);
         
     }
     else{
+        log.write_log(log_location,"Ошибка чтения базы данных");
         std::cout<<"Такого файла базы данных клиента не существует"<<std::endl;
         exit(0);
     }

@@ -7,9 +7,9 @@ UI::UI(int argc, char* argv[])
     logger log;
     desc.add_options()
     ("help,h", "Помощь")
-    ("Log_loc,l", po::value<std::vector<std::string>>()->multitoken(), "Путь для log файла")
-    ("Port,p", po::value<std::vector<uint>>()->multitoken(), "Порт сервера")
-    ("Base_loc,b", po::value<std::vector<std::string>>()->multitoken(), "Путь для базы данных клиентов");
+    ("Log_loc,l", po::value<std::vector<std::string>>()->multitoken()->required(), "Путь для log файла")
+    ("Port,p", po::value<std::vector<uint>>()->multitoken()->required(), "Порт сервера")
+    ("Base_loc,b", po::value<std::vector<std::string>>()->multitoken()->required(), "Путь для базы данных клиентов");
     try {
         po::store(po::parse_command_line(argc, argv, desc), vm);
         po::notify(vm);
@@ -18,16 +18,24 @@ UI::UI(int argc, char* argv[])
         port=get_port();
         communicator server (port,base_loc,log_loc);
         while (true)
-    {
-        server.connect_to_cl();
-        if(server.client_auth()==1){
-            server.close_sock();
+        {
+            server.connect_to_cl();
+            log.write_log(log_loc,"Сервер установил соединение с клиентом "+server.cl_id);
+            int flag = server.client_auth();
+            if(flag==1){
+                log.write_log(log_loc,"Серверу не удалось аутентифицировать клиента "+server.cl_id);
+                server.close_sock();
+            }
+            else{
+                log.write_log(log_loc,"Аутентификация прошла успешно, начало фазы вычислений");
+                uint32_t num_of_vecc;
+                int recv_b = recv(server.clientSocket,&num_of_vecc,sizeof num_of_vecc,0);
+                data_handler inf(num_of_vecc,server);
+                server.close_sock();
+                log.write_log(log_loc,"Работа с клиентом "+server.cl_id+" успешно завершена"+"\n");
+                std::cout << "Сервер завершил работу для пользователя: "<<server.cl_id << std::endl;
+            }
         }
-        else{
-            int num_of_vecc=stoi(server.recv_data());
-            data_handler inf(num_of_vecc,server);
-        }
-    }
     } catch (po::error& e) {
         std::cout << e.what() << std::endl;
     }

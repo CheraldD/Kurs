@@ -15,7 +15,7 @@ SOURCES = main.cpp base.cpp communicator.cpp ui.cpp logger.cpp data_handler.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 # Зависимости на заголовочные файлы
-DEPS = base.h ui.h communicator.h logger.h data_handler.h
+DEPS = base.h ui.h communicator.h logger.h
 
 # Цель по умолчанию
 all: $(TARGET)
