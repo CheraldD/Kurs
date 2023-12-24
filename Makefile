@@ -1,25 +1,17 @@
-.PHONY: all clean
-# Имя компилятора
+.PHONY: test doxy clean
 CXX = g++
-
-# Флаги компилятора
-CXXFLAGS = -Wall -lboost_program_options -lcrypto++ 
-
-# Имя исполняемого файла
-TARGET = server
-
-# Исходные файлы
-SOURCES = main.cpp base.cpp communicator.cpp ui.cpp logger.cpp data_handler.cpp
-
-# Объектные файлы
+CXXFLAGS = -Wall -lboost_program_options -lcrypto++ -lUnitTest++ -lboost_filesystem
+TARGET = Utest
+SOURCES = $(wildcard *.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
-
-# Зависимости на заголовочные файлы
-DEPS = base.h ui.h communicator.h logger.h
-
-# Цель по умолчанию
-all: $(TARGET)
-
+DEPS = $(wildcard *.h)
+test: $(TARGET) b.txt ll.txt
+doxy:
+	doxygen
+b.txt:
+	@echo "login/password" >b.txt
+ll.txt:
+	touch ll.txt
 $(TARGET): $(OBJECTS)
 	$(CXX) $(OBJECTS) $(CXXFLAGS) -o $(TARGET) 
 

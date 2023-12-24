@@ -1,4 +1,5 @@
-*.o
-server
-.vscode
-temp.cpp
+/.vscode
+b.txt
+ll.txt
+test.o
+Utest
