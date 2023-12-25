@@ -9,7 +9,7 @@ test: $(TARGET) b.txt ll.txt
 doxy:
 	doxygen
 b.txt:
-	@echo "login/password" >b.txt
+	@echo "login:password" >b.txt
 ll.txt:
 	touch ll.txt
 $(TARGET): $(OBJECTS)

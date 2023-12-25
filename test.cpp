@@ -45,7 +45,6 @@ SUITE(data_handler_test){
         data_handler handle(server,"ll.txt");
         double temp = 451.1;
         double res = handle.calculation(temp);
-        std::cout<<res<<std::endl;
         CHECK_EQUAL(temp*temp,res);
 
     }
