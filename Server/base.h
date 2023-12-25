@@ -31,13 +31,13 @@ class base{
     std::vector<std::string> clients;
     /**
     * @brief Метод разбора логинов
-    * @details Из строки логин/пароль получается логин
+    * @details Из строки логин:пароль получается логин
     * @param [in] logins Вектор для хранения логинов
     */
     std::vector<std::string> id_s(std::vector<std::string> logins);
     /**
     * @brief Метод разбора паролей
-    * @details Из строки логин/пароль получается пароль
+    * @details Из строки логин:пароль получается пароль
     * @param [in] pswds Вектор для хранения паролей
     */
     std::vector<std::string> password_s(std::vector<std::string> pswds);  
