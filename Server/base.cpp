@@ -13,7 +13,7 @@ void base:: read_base(std::ifstream & b){
         if (temp.empty()){
             continue;
         }
-        if(std::count(temp.begin(),temp.end(),'/')>1 or std::count(temp.begin(),temp.end(),'/')<1){
+        if(std::count(temp.begin(),temp.end(),':')>1 or std::count(temp.begin(),temp.end(),':')<1){
             log.write_log(log_location,"Работа модуля base. Неверный формат данных о пользователе");
             throw critical_error("Неверный формат данных о пользователе");
         }
@@ -28,7 +28,7 @@ std::vector<std::string> base::id_s(std::vector<std::string> logins){
     std::vector<std::string> temp;
     for (int i = 0; i < logins.size(); i++)
     {
-        logins[i].erase(logins[i].find("/"));
+        logins[i].erase(logins[i].find(":"));
         temp.push_back(logins[i]);
     }
     return temp;
@@ -37,7 +37,7 @@ std::vector<std::string> base::password_s(std::vector<std::string> pswds){
     std::vector<std::string> temp1;
     for (int i = 0; i < pswds.size(); i++)
     {
-        temp1.push_back(pswds[i].substr(pswds[i].find("/")+1));
+        temp1.push_back(pswds[i].substr(pswds[i].find(":")+1));
     }
     return temp1;
 }
